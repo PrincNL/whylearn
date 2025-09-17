@@ -1,0 +1,48 @@
+{
+    "name": "whylearn",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "dev": "concurrently -k -s first -n api,web \"npm:dev:api\" \"npm:dev:web\"",
+        "dev:api": "tsx watch src/server.ts",
+        "dev:web": "npm --prefix apps/web run dev",
+        "build": "npm --prefix apps/web run build && tsc",
+        "start": "concurrently -k -s first -n api,web \"npm:start:api\" \"npm:start:web\"",
+        "start:api": "node dist/server.js",
+        "start:web": "npm --prefix apps/web run start",
+        "test": "vitest run",
+        "test:watch": "vitest",
+        "lint": "npm --prefix apps/web run lint",
+        "lint:web": "npm --prefix apps/web run lint",
+        "build:api": "tsc",
+        "data:migrate": "tsx src/cli/data/index.ts migrate",
+        "data:validate": "tsx src/cli/data/index.ts validate",
+        "data:backup": "tsx src/cli/data/index.ts backup",
+        "data:export": "tsx src/cli/data/index.ts export",
+        "data:import": "tsx src/cli/data/index.ts import"
+    },
+    "keywords": [],
+    "author": "",
+    "license": "ISC",
+    "type": "commonjs",
+    "dependencies": {
+        "dotenv": "^17.2.2",
+        "express": "^5.1.0",
+        "express-rate-limit": "^8.1.0",
+        "helmet": "^8.1.0",
+        "pino": "^9.9.5",
+        "stripe": "^18.5.0",
+        "zod": "^4.1.8"
+    },
+    "devDependencies": {
+        "@types/express": "^5.0.3",
+        "@types/node": "^24.4.0",
+        "@types/supertest": "^6.0.3",
+        "concurrently": "^9.2.1",
+        "supertest": "^7.1.4",
+        "tsx": "^4.20.5",
+        "typescript": "^5.9.2",
+        "vitest": "^3.2.4"
+    }
+}
