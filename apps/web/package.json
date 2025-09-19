@@ -18,8 +18,8 @@
     "framer-motion": "^11.5.5",
     "lucide-react": "^0.464.0",
     "next": "15.5.3",
-    "react": "19.1.0",
-    "react-dom": "19.1.0",
+    "react": "19.1.1",
+    "react-dom": "19.1.1",
     "react-hook-form": "^7.56.3",
     "tailwind-merge": "^2.5.3",
     "tailwindcss-animate": "^1.0.7",
@@ -39,3 +39,4 @@
     "typescript": "^5"
   }
 }
+

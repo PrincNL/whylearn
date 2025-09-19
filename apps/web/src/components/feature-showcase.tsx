@@ -1,6 +1,6 @@
 "use client";
 
-import { motion } from "framer-motion";
+import { motion, useReducedMotion } from "framer-motion";
 import type { LucideIcon } from "lucide-react";
 
 export type FeatureItem = {
@@ -11,6 +11,8 @@ export type FeatureItem = {
 };
 
 export function FeatureShowcase({ features }: { features: FeatureItem[] }) {
+  const shouldReduceMotion = useReducedMotion();
+
   return (
     <div className="grid gap-6 md:grid-cols-2">
       {features.map((feature, index) => {
@@ -19,10 +21,10 @@ export function FeatureShowcase({ features }: { features: FeatureItem[] }) {
           <motion.article
             key={feature.title}
             className="group relative overflow-hidden rounded-2xl border border-border/60 bg-card p-6 shadow-sm transition-colors hover:border-primary/40"
-            initial={{ opacity: 0, y: 12 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.05, duration: 0.4, ease: "easeOut" }}
-            whileHover={{ translateY: -4 }}
+            initial={shouldReduceMotion ? undefined : { opacity: 0, y: 12 }}
+            animate={shouldReduceMotion ? undefined : { opacity: 1, y: 0 }}
+            transition={shouldReduceMotion ? undefined : { delay: index * 0.05, duration: 0.4, ease: "easeOut" }}
+            whileHover={shouldReduceMotion ? undefined : { translateY: -4 }}
           >
             <div className="flex items-center gap-3">
               <span className="flex h-10 w-10 items-center justify-center rounded-full bg-primary/10 text-primary">

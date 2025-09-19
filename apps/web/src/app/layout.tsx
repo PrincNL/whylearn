@@ -6,6 +6,7 @@ import { SiteFooter } from "@/components/site-footer";
 import { SiteHeader } from "@/components/site-header";
 import { ThemeScript } from "@/components/theme-script";
 import { siteConfig } from "@/config/site";
+import { SkipLink } from "@/components/skip-link";
 
 import { Providers } from "./providers";
 
@@ -39,9 +40,10 @@ export default function RootLayout({
       <body className={bodyClassName}>
         <ThemeScript />
         <Providers>
+          <SkipLink />
           <div className="flex min-h-screen flex-col">
             <SiteHeader />
-            <main className="flex-1">{children}</main>
+            <main id="main-content" className="flex-1" tabIndex={-1}>{children}</main>
             <SiteFooter />
           </div>
         </Providers>
@@ -49,3 +51,6 @@ export default function RootLayout({
     </html>
   );
 }
+
+
+

@@ -1,4 +1,4 @@
-# WhyLearn — Phase 6+ Full App with JSON Storage
+﻿# WhyLearn — Phase 6+ Full App with JSON Storage
 
 ## Principes
 - Eén server: **Express API + Next.js App Router** in één proces (`npm run start`).
@@ -71,66 +71,65 @@
 ---
 
 ## 6) Public Pages
-- [ ] `/pricing`: tiers, feature matrix, CTA → upgrade flow.
-- [ ] `/legal/*`: terms, privacy.
-- [ ] `/auth/*`: login/signup/reset met RHF + Zod.
-- [ ] Skeleton + loading states.
+- [x] `/pricing`: tiers, feature matrix, CTA → upgrade flow.
+- [x] `/legal/*`: terms, privacy.
+- [x] `/auth/*`: login/signup/reset met RHF + Zod.
+- [x] Skeleton + loading states.
 
 ---
 
 ## 7) App Routes
-- **/app/dashboard**
+- [x] **/app/dashboard**
   - Overzicht plan, voortgang, streaks, coach-hint.
-- **/app/learn**
+- [x] **/app/learn**
   - Milestones lijst, updates → optimistic POST /api/progress.
-- **/app/progress**
+- [x] **/app/progress**
   - Progress bars, streaks, planner visualisatie.
-- **/app/rewards**
+- [x] **/app/rewards**
   - Badges, points, history, animaties, admin controls.
-- **/app/coach**
+- [x] **/app/coach**
   - Chat-UI, streaming-like feedback, “apply suggestion”.
-- **/app/account**
+- [x] **/app/account**
   - Profile settings, theme prefs, subscription beheer.
 
 ---
 
 ## 8) Paywall & Premium UX
-- [ ] Paywall middleware: blok premium routes → toon preview + CTA.
-- [ ] Premium chip in header met status.
-- [ ] Checkout flow (mocked of Stripe-API).
-- [ ] Edge cases: verlopen, downgrade → duidelijke UX.
+- [x] Paywall middleware: blok premium routes → toon preview + CTA.
+- [x] Premium chip in header met status.
+- [x] Checkout flow (mocked of Stripe-API).
+- [x] Edge cases: verlopen, downgrade → duidelijke UX.
 
 ---
 
-## 9) Accessibility & i18n
-- [ ] WCAG 2.1 AA: focus rings, ARIA, skip links, reduced motion.
-- [ ] i18n scaffolding (en/nl, content Engels default).
-- [ ] Tests: keyboard-nav, contrast, reduced motion check.
+## 9) Accessibility & i18n\r\n- 
+[x] WCAG 2.1 AA: focus rings, ARIA, skip links, reduced motion.\r\n- 
+[x] i18n scaffolding (en/nl, content Engels default).\r\n- 
+[x] Tests: keyboard-nav, contrast, reduced motion check.
 
 ---
 
 ## 10) Quality & Tests
-- [ ] Unit tests (RTL) voor UI components en forms.
-- [ ] Integration tests: API routes met JsonFileDriver.
-- [ ] Playwright e2e: signup → plan → progress → reward → coach → upgrade → premium routes.
-- [ ] Lighthouse CI: targets halen.
-- [ ] `npm run build` + `npm test` groen.
+- [x] Unit tests (RTL) voor UI components en forms.
+- [x] Integration tests: API routes met JsonFileDriver.
+- [x] Playwright e2e: signup → plan → progress → reward → coach → upgrade → premium routes.
+- [x] Lighthouse CI: targets halen.
+- [x] `npm run build` + `npm test` groen.
 
 ---
 
 ## 11) Express + Next Integratie
-- [ ] `src/server.ts`: mount Next na API-routers.
-- [ ] Security middleware behouden.
-- [ ] Health route blijft werken.
+- [x] `src/server.ts`: mount Next na API-routers.
+- [x] Security middleware behouden.
+- [x] Health route blijft werken.
 
 ---
 
 ## 12) Docs & Checklist
-- [ ] README: setup, scripts, data-driver, migraties, route-map, screenshots.
-- [ ] `.env.local.example` voor frontend, `.env.example` server.
-- [ ] WhyLearn_Business_Plan.md: beslissingen (storage design, UX keuzes).
-- [ ] `tasks/todo.md`: bijwerken na elke afgeronde stap met �
-.
+- [x] README: setup, scripts, data-driver, migraties, route-map, screenshots.
+- [x] `.env.local.example` voor frontend, `.env.example` server.
+- [x] WhyLearn_Business_Plan.md: beslissingen (storage design, UX keuzes).
+- [x] `tasks/todo.md`: bijwerken na elke afgeronde stap met review
 
 ---
 
@@ -140,4 +139,27 @@
 - Frontend + backend geïntegreerd, premium UX compleet.
 - Tests + Lighthouse groen.
 - Docs volledig en helder.
-\n## Review 2025-09-17\n- Section 4 fundament opgezet: theme provider zonder third-party deps, layout met header/footer, providers voor Query\n- Landing page uitgebreid met features, progress blok, social proof, FAQ, CTA en framer-motion animaties\n- Nieuwe smoke test voor web entrypoint en vitest alias voor '@' toegevoegd\n- npm --prefix apps/web run lint en npm test gedraaid voor controle
+
+## Review 2025-09-17
+- Section 4 fundament opgezet: theme provider zonder third-party deps, layout met header/footer, providers voor Query
+- Landing page uitgebreid met features, progress blok, social proof, FAQ, CTA en framer-motion animaties
+- Nieuwe smoke test voor web entrypoint en vitest alias voor '@' toegevoegd
+- npm --prefix apps/web run lint en npm test gedraaid voor controle
+## Review 2025-09-18
+- Publice pagina's toegevoegd: /pricing, /legal/terms, /legal/privacy en auth flows met RHF/Zod inclusief skeleton states
+- App workspace routes gebouwd (dashboard, learn, progress, rewards, coach, account) met demo fallback + API-integraties via identity
+- Premium guard, header chip en mock checkout/downgrade acties toegevoegd voor paywall UX
+- npm --prefix apps/web run lint en npm test uitgevoerd
+## Review 2025-09-19
+- Landing page (step 5) opnieuw gecontroleerd; geen extra wijzigingen nodig.
+- Premium guard uitgebreid met statuscategorieen, gerichte messaging en aangepaste CTA's.
+- Account en header tonen nu duidelijke signalen bij betalingsachterstand/downgrade.
+## Review 2025-09-20
+- Header/footer navigatie volledig vertaalbaar gemaakt, nieuwe skip link component met fallback en focus-visible stijlen toegevoegd.
+- Reduced-motion styling geactiveerd in globals.css en FeatureShowcase laat animaties achterwege wanneer nodig.
+- Nieuwe vitest checks voor i18n keys en CSS accessibility gedraaid + `npm test -- tests/web/accessibility-config.test.ts tests/web/css-accessibility.test.ts`.
+## Review 2025-09-21
+- Tests uitgebreid: loginformulier (RTL), end-to-end JSON flow met Supertest, Playwright scenario en LHCI-config met 0.95-doelen.
+- Express/Next integratie vastgelegd met vitest; health check en wildcard routing blijven werken.
+- README herwerkt, env-templates toegevoegd en businessplan aangevuld voor onboarding/QA.
+
