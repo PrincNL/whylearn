@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.requirePremium = exports.requireAuth = void 0;
-const supabaseService_1 = require("../services/supabaseService");
+const dataService_1 = require("../services/dataService");
 const subscriptionService_1 = require("../services/subscriptionService");
 const isSessionHeader = (token) => typeof token === "string" && token.length > 0;
 const extractToken = (req) => {
@@ -23,11 +23,11 @@ const requireAuth = async (req, res, next) => {
         if (!token) {
             return res.status(401).json({ status: "error", message: "Authentication required" });
         }
-        const user = await supabaseService_1.supabaseService.getUserBySessionToken(token);
+        const user = await dataService_1.dataService.getUserBySessionToken(token);
         if (!user) {
             return res.status(401).json({ status: "error", message: "Invalid or expired session" });
         }
-        req.authUser = supabaseService_1.supabaseService.sanitizeUser(user);
+        req.authUser = dataService_1.dataService.sanitizeUser(user);
         req.sessionToken = token;
         next();
     }

@@ -1,10 +1,10 @@
 import { afterEach, beforeEach, describe, expect, it } from "vitest";
 
 import { generateLearningPlan } from "../src/services/learningPlanService";
-import { supabaseService } from "../src/services/supabaseService";
+import { dataService } from "../src/services/dataService";
 import { setupTestStorage } from "./helpers/storage";
 
-describe("SupabaseService gamification", () => {
+describe("DataService gamification", () => {
   let cleanup: (() => void) | undefined;
   let userId = "";
   let planId = "";
@@ -14,7 +14,7 @@ describe("SupabaseService gamification", () => {
     const ctx = await setupTestStorage();
     cleanup = ctx.cleanup;
     plan = generateLearningPlan("data analysis");
-    const result = await supabaseService.registerUser(
+    const result = await dataService.registerUser(
       "learner@example.com",
       "StrongP@ssw0rd1",
       plan.goal,
@@ -31,7 +31,7 @@ describe("SupabaseService gamification", () => {
 
   it("awards points and badges when completing milestones", async () => {
     const milestoneId = plan.milestones[0].id;
-    const outcome = await supabaseService.upsertTaskProgress({
+    const outcome = await dataService.upsertTaskProgress({
       userId,
       milestoneId,
       status: "completed",
@@ -45,14 +45,14 @@ describe("SupabaseService gamification", () => {
 
   it("applies manual gamification rewards and returns status", async () => {
     const milestoneId = plan.milestones[0].id;
-    await supabaseService.upsertTaskProgress({
+    await dataService.upsertTaskProgress({
       userId,
       milestoneId,
       status: "completed",
       planId,
     });
 
-    const result = await supabaseService.applyManualGamification({
+    const result = await dataService.applyManualGamification({
       userId,
       planId,
       points: 75,

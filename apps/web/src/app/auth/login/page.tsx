@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from "next/link";
 import { useState } from "react";
@@ -9,6 +9,8 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { resolveApiUrl } from "@/lib/api";
+import { useDemoIdentity } from "@/app/app/_hooks/use-demo-identity";
 
 const schema = z.object({
   email: z.string().email("Enter a valid email"),
@@ -18,6 +20,24 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 type SubmitState = "idle" | "loading" | "success" | "error";
+
+type SessionPayload = {
+  user: { id: string };
+  session: { token: string };
+  userId?: string;
+  planId?: string;
+};
+
+type ProgressPayload = {
+  planId: string;
+};
+
+type ApiResponse<T> = {
+  status: "success" | "error";
+  data?: T;
+  message?: string;
+  error?: string;
+};
 
 export default function LoginPage() {
   const {
@@ -31,21 +51,56 @@ export default function LoginPage() {
 
   const [state, setState] = useState<SubmitState>("idle");
   const [message, setMessage] = useState<string | null>(null);
+  const { updateIdentity } = useDemoIdentity();
 
   const onSubmit = async (values: FormValues) => {
     setState("loading");
     setMessage(null);
     try {
-      const response = await fetch("/api/auth/login", {
+      const response = await fetch(resolveApiUrl("/api/auth/login"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-      if (!response.ok) {
-        const payload = await response.json().catch(() => null);
-        const detail = payload?.message ?? payload?.error ?? "Login failed";
+      const payload = (await response.json().catch(() => null)) as ApiResponse<SessionPayload> | null;
+      if (!payload) {
+        throw new Error("Unexpected server response");
+      }
+      if (!response.ok || payload.status !== "success" || !payload.data) {
+        const detail = payload.message ?? payload.error ?? "Login failed";
         throw new Error(detail);
       }
+
+      const { user, session } = payload.data;
+      if (!user?.id || !session?.token) {
+        throw new Error("Login failed: session not issued");
+      }
+
+      let planId = payload.data.planId ?? "";
+      if (!planId) {
+        try {
+          const progressResponse = await fetch(resolveApiUrl(`/api/progress/${user.id}`), {
+            headers: { Authorization: `Bearer ${session.token}` },
+          });
+          if (progressResponse.ok) {
+            const progressPayload = (await progressResponse
+              .json()
+              .catch(() => null)) as ApiResponse<ProgressPayload> | null;
+            if (progressPayload?.data?.planId) {
+              planId = progressPayload.data.planId;
+            }
+          }
+        } catch (progressError) {
+          console.warn("Unable to fetch plan after login", progressError);
+        }
+      }
+
+      updateIdentity({
+        userId: payload.data.userId ?? user.id,
+        planId,
+        sessionToken: session.token,
+      });
+
       setState("success");
       setMessage("Login successful. Redirecting to your dashboard...");
       setTimeout(() => {
@@ -107,5 +162,4 @@ export default function LoginPage() {
     </div>
   );
 }
-
 

@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 
 import { requireAuth } from "../middleware/authMiddleware";
-import { supabaseService } from "../services/supabaseService";
+import { dataService } from "../services/dataService";
 import { AppError } from "../utils/appError";
 import { asyncHandler } from "../utils/asyncHandler";
 
@@ -38,7 +38,7 @@ progressRouter.post(
     }
 
     const { planId, progressTimestamp, ...rest } = parsed.data;
-    const payload: Parameters<typeof supabaseService.upsertTaskProgress>[0] = { ...rest };
+    const payload: Parameters<typeof dataService.upsertTaskProgress>[0] = { ...rest };
     if (planId) {
       payload.planId = planId;
     }
@@ -46,7 +46,7 @@ progressRouter.post(
       payload.progressTimestamp = progressTimestamp;
     }
 
-    const result = await supabaseService.upsertTaskProgress(payload);
+    const result = await dataService.upsertTaskProgress(payload);
     res.status(200).json({ status: "success", data: result });
   }),
 );
@@ -66,7 +66,7 @@ progressRouter.get(
       throw new AppError("Forbidden", 403);
     }
 
-    const overview = await supabaseService.getProgressOverview(
+    const overview = await dataService.getProgressOverview(
       parsedParams.data.userId,
       parsedParams.data.planId,
     );

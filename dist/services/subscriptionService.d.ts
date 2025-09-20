@@ -1,7 +1,7 @@
 import Stripe from 'stripe';
-import { supabaseService, type SubscriptionStatusValue, type UserSubscriptionStatus } from './supabaseService';
+import { dataService, type SubscriptionStatusValue, type UserSubscriptionStatus } from './dataService';
 type SubscriptionDependencies = {
-    supabase?: typeof supabaseService;
+    store?: typeof dataService;
     stripe?: Stripe | null;
 };
 export interface SubscriptionChangeRequest {
@@ -17,7 +17,7 @@ export interface SubscriptionChangeResponse {
     checkoutUrl?: string | null;
 }
 export declare class SubscriptionService {
-    private readonly supabase;
+    private readonly store;
     private readonly stripe;
     constructor(deps?: SubscriptionDependencies);
     changeSubscription(request: SubscriptionChangeRequest): Promise<SubscriptionChangeResponse>;

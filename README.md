@@ -7,39 +7,37 @@ Combined Express API and Next.js App Router app backed by JSON file storage. The
 - npm 9+
 
 ## Quick Start
-1. 
-pm install
-2. Copy .env.example to .env
-3. Copy .env.local.example to .env.local
-4. 
-pm run dev
+1. `npm install`
+2. Copy `.env.example` to `.env`
+3. Copy `.env.local.example` to `.env.local`
+4. `npm run dev`
 
 ### Environment variables
-src/config/env.ts validates the server config:
-- PORT – Express + Next listening port (default 4000)
-- WEB_PORT – unused in production but reserved for split dev workflows
-- STRIPE_SECRET_KEY, STRIPE_SUCCESS_URL, STRIPE_CANCEL_URL – optional when enabling real Stripe checkout
+`src/config/env.ts` validates server configuration. Key entries:
+- `APP_URL` â€“ base URL for the web app; used when building password reset links (defaults to `http://localhost:WEB_PORT`).
+- `DATA_DIR` â€“ directory for JSON datasets (default `.data`).
+- `PORT` / `WEB_PORT` â€“ API listener + companion web port.
+- `MAIL_FROM` / `MAIL_FROM_NAME` â€“ friendly sender shown in outgoing emails.
+- `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS` â€“ configure SMTP delivery. When omitted the system logs reset links instead of sending them.
+- `STRIPE_SECRET_KEY`, `STRIPE_SUCCESS_URL`, `STRIPE_CANCEL_URL` â€“ optional payment integration.
+- `CORS_ORIGINS` â€“ comma separated list of allowed browser origins (defaults to `http://localhost:WEB_PORT`).
 
-Front-end builds read .env.local; we expose NEXT_PUBLIC_API_BASE_URL for client requests when needed.
+Front-end builds read .env.local and use `NEXT_PUBLIC_API_ORIGIN` to reach the API.
+
+### Password reset emails
+WhyLearn now generates branded reset emails via the SMTP settings above. During development you can leave the SMTP variables unset to have links logged to the console. In production, supply working credentials and set `APP_URL` to the public site so emails route learners to the correct reset screen.
 
 ## Storage
-All application data lives in .data/ via the JsonFileDriver. Writes are atomic (tmp ? fsync ? rename) with journaling and daily backups. Tests use setupTestStorage() to isolate data under a temp directory.
+All application data lives in the directory defined by DATA_DIR (default `.data`) via the JsonFileDriver. Writes are atomic (tmp -> fsync -> rename) with journaling and daily backups. Tests use setupTestStorage() to isolate data under a temp directory.
 
 ## Scripts
-- 
-pm run dev – concurrently boot the API (src/server.ts) and Next.js app
-- 
-pm run build – build the Next.js frontend and compile TypeScript to dist/
-- 
-pm start – run the compiled Express + Next bundle
-- 
-pm test – Vitest unit + integration suite (API + UI components)
-- 
-pm run test:e2e – Playwright API flow hitting the in-memory server
-- 
-pm run test:lighthouse – Lighthouse CI against the production build
-- 
-pm run data:* – JSON storage maintenance CLI (migrate, validate, backup, export, import)
+- `npm run dev` â€“ concurrently boot the API (`src/server.ts`) and Next.js app.
+- `npm run build` â€“ build the Next.js frontend and compile TypeScript to `dist/`.
+- `npm start` â€“ run the compiled Express + Next bundle.
+- `npm test` â€“ Vitest unit + integration suite (API + UI components).
+- `npm run test:e2e` â€“ Playwright API flow hitting the in-memory server.
+- `npm run test:lighthouse` â€“ Lighthouse CI against the production build.
+- `npm run data:*` â€“ JSON storage maintenance CLI (migrate, validate, backup, export, import).
 
 ## Testing & QA
 - UI: React Testing Library covers form validation, language toggle, skip link, etc.
@@ -56,7 +54,9 @@ pm run test:lighthouse asserts =0.95 across performance, accessibility, SEO, and
 - POST /api/subscriptions and GET /api/subscriptions/:userId
 - GET /health
 
-All API routes require a bearer session token issued by registration/login and enforced by equireAuth. Premium routes check entitlements via equirePremium.
+All API routes require a bearer session token issued by registration/login and enforced by 
+equireAuth. Premium routes check entitlements via 
+equirePremium.
 
 ## CLI
 	sx src/cli/data/index.ts <command> powers migrations, validation, backups, exports, and imports on the JSON datasets.

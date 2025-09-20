@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "id": "19be2745-d977-44f5-9acb-61eb11945909",
+      "email": "info@princhub.com",
+      "passwordHash": "e6eec8b64bbeaf7383014199b49a6754:a6ff26595aa36a91a3478f6fa398cbaec483fe62017578f57857f27bd4cf7b1e4a5a36b773635bc8f82eaac9e846235e33b28ad769fb33ce751e0b2146f4f299",
+      "goal": "Be A Programmer",
+      "onboardingStep": "learning_plan_generated",
+      "premiumTierId": null,
+      "premiumStatus": "free",
+      "sessionToken": "5f68ed90-a8d7-48c6-a042-85b9abab8f4d",
+      "sessionExpiresAt": "2025-09-20T21:22:04.818Z",
+      "passwordResetToken": null,
+      "passwordResetExpiresAt": null,
+      "createdAt": "2025-09-19T21:22:04.729Z",
+      "updatedAt": "2025-09-19T21:22:04.818Z"
+    }
+  ],
+  "lastUpdatedAt": "2025-09-19T21:22:04.628Z"
+}

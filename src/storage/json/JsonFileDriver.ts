@@ -51,7 +51,12 @@ export class JsonFileDriver implements StorageAdapter {
   private readonly lockRetryDelayMs: number;
 
   constructor(options: JsonFileDriverOptions = {}) {
-    this.baseDir = options.baseDir ?? path.resolve(process.cwd(), '.data');
+    const resolvedBaseDir = options.baseDir
+      ? path.isAbsolute(options.baseDir)
+        ? options.baseDir
+        : path.resolve(process.cwd(), options.baseDir)
+      : path.resolve(process.cwd(), '.data');
+    this.baseDir = resolvedBaseDir;
     this.maxLockRetries = options.maxLockRetries ?? 50;
     this.lockRetryDelayMs = options.lockRetryDelayMs ?? 20;
   }

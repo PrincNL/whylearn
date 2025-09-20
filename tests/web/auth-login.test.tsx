@@ -22,10 +22,26 @@ describe("LoginPage", () => {
   });
 
   it("handles successful login flow", async () => {
-    const fetchMock = vi.spyOn(globalThis, "fetch").mockResolvedValue({
-      ok: true,
-      json: async () => ({ status: "success" }),
-    } as Response);
+    const fetchMock = vi.spyOn(globalThis, "fetch").mockImplementation(async (input) => {
+      if (typeof input === "string" && input.startsWith("/api/auth/login")) {
+        return {
+          ok: true,
+          json: async () => ({
+            status: "success",
+            data: {
+              user: { id: "user-1", email: "valid@example.com" },
+              session: { token: "token-123" },
+              planId: "plan-1",
+            },
+          }),
+        } as Response;
+      }
+
+      return {
+        ok: true,
+        json: async () => ({ status: "success", data: { planId: "plan-1" } }),
+      } as Response;
+    });
     const user = userEvent.setup();
 
     render(<LoginPage />);

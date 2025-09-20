@@ -4,7 +4,7 @@ exports.gamificationRouter = void 0;
 const express_1 = require("express");
 const zod_1 = require("zod");
 const authMiddleware_1 = require("../middleware/authMiddleware");
-const supabaseService_1 = require("../services/supabaseService");
+const dataService_1 = require("../services/dataService");
 const appError_1 = require("../utils/appError");
 const asyncHandler_1 = require("../utils/asyncHandler");
 const manualSchema = zod_1.z.object({
@@ -23,7 +23,7 @@ exports.gamificationRouter.post("/", (0, asyncHandler_1.asyncHandler)(async (req
     if (!req.authUser || req.authUser.id !== parsed.data.userId) {
         throw new appError_1.AppError("Forbidden", 403);
     }
-    const result = await supabaseService_1.supabaseService.applyManualGamification(parsed.data);
+    const result = await dataService_1.dataService.applyManualGamification(parsed.data);
     res.status(200).json({ status: "success", data: result });
 }));
 exports.gamificationRouter.get("/:userId", (0, asyncHandler_1.asyncHandler)(async (req, res) => {
@@ -38,7 +38,7 @@ exports.gamificationRouter.get("/:userId", (0, asyncHandler_1.asyncHandler)(asyn
     if (!req.authUser || req.authUser.id !== parsedParams.data.userId) {
         throw new appError_1.AppError("Forbidden", 403);
     }
-    const status = await supabaseService_1.supabaseService.getGamificationStatus(parsedParams.data.userId, parsedParams.data.planId);
+    const status = await dataService_1.dataService.getGamificationStatus(parsedParams.data.userId, parsedParams.data.planId);
     res.json({ status: "success", data: status });
 }));
 //# sourceMappingURL=gamificationRoutes.js.map

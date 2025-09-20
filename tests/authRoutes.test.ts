@@ -1,8 +1,10 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it } from "vitest";
 
 import { createApp } from "../src/server";
+import { dataService } from "../src/services/dataService";
 import { setupTestStorage } from "./helpers/storage";
+import { describeIfNetwork } from "./helpers/network";
 
 const registerPayload = {
   email: "learner@example.com",
@@ -11,7 +13,7 @@ const registerPayload = {
   preferredPaceHoursPerWeek: 6,
 };
 
-describe("Auth routes", () => {
+describeIfNetwork("Auth routes", () => {
   let cleanup: (() => void) | undefined;
   let app = createApp();
 
@@ -58,15 +60,22 @@ describe("Auth routes", () => {
   });
 
   it("issues and consumes password reset token", async () => {
-    await request(app).post("/api/auth/register").send(registerPayload);
+    const registration = await request(app)
+      .post("/api/auth/register")
+      .send(registerPayload);
+
+    const userId = registration.body.data.userId;
 
     const resetRequest = await request(app)
       .post("/api/auth/reset/request")
       .send({ email: registerPayload.email });
 
-    expect(resetRequest.status).toBe(200);
-    const token = resetRequest.body.data.resetToken;
-    expect(token).toMatch(/.+/);
+    expect(resetRequest.status).toBe(202);
+    expect(resetRequest.body.status).toBe("success");
+
+    const userRecord = await dataService.getUserById(userId);
+    expect(userRecord?.passwordResetToken).toMatch(/.+/);
+    const token = userRecord!.passwordResetToken!;
 
     const resetConfirm = await request(app)
       .post("/api/auth/reset/confirm")

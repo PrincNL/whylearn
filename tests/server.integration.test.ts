@@ -1,9 +1,10 @@
 import request from "supertest";
-import { describe, expect, it, vi } from "vitest";
+import { expect, it, vi } from "vitest";
 
 import { createApp } from "../src/server";
+import { describeIfNetwork } from "./helpers/network";
 
-describe("Express + Next integration", () => {
+describeIfNetwork("Express + Next integration", () => {
   it("keeps health route functional", async () => {
     const app = createApp();
 

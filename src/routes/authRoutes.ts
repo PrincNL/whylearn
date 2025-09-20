@@ -3,7 +3,9 @@ import { z } from "zod";
 
 import { requireAuth } from "../middleware/authMiddleware";
 import { generateLearningPlan } from "../services/learningPlanService";
-import { supabaseService } from "../services/supabaseService";
+import { dataService } from "../services/dataService";
+import { emailService } from "../services/emailService";
+import { logger } from "../config/logger";
 import { AppError } from "../utils/appError";
 import { asyncHandler } from "../utils/asyncHandler";
 
@@ -36,14 +38,7 @@ const resetConfirmSchema = z.object({
 });
 
 const authRouter = Router();
-
-const buildAuthResponse = async (userId: string) => {
-  const user = await supabaseService.getUserById(userId);
-  if (!user) {
-    throw new AppError("User not found", 404);
-  }
-  return supabaseService.sanitizeUser(user);
-};
+const RESET_TOKEN_LIFETIME_MINUTES = 30;
 
 authRouter.post(
   "/register",
@@ -55,9 +50,9 @@ authRouter.post(
 
     const { email, password, goal, preferredPaceHoursPerWeek } = parsed.data;
     const plan = generateLearningPlan(goal, preferredPaceHoursPerWeek);
-    const { userId, planId } = await supabaseService.registerUser(email, password, plan.goal, plan);
-    const session = await supabaseService.createSession(userId);
-    const user = await buildAuthResponse(userId);
+    const { userId, planId, user: userRecord } = await dataService.registerUser(email, password, plan.goal, plan);
+    const session = await dataService.createSession(userId);
+    const user = dataService.sanitizeUser(userRecord);
 
     res.status(201).json({
       status: "success",
@@ -80,16 +75,16 @@ authRouter.post(
       throw new AppError("Validation failed", 422, parsed.error.flatten());
     }
 
-    const user = await supabaseService.verifyUserCredentials(parsed.data.email, parsed.data.password);
+    const user = await dataService.verifyUserCredentials(parsed.data.email, parsed.data.password);
     if (!user) {
       throw new AppError("Invalid credentials", 401);
     }
 
-    const session = await supabaseService.createSession(user.id);
+    const session = await dataService.createSession(user.id);
     res.json({
       status: "success",
       data: {
-        user: supabaseService.sanitizeUser(user),
+        user: dataService.sanitizeUser(user),
         session,
       },
     });
@@ -101,7 +96,7 @@ authRouter.post(
   requireAuth,
   asyncHandler(async (req, res) => {
     if (req.sessionToken) {
-      await supabaseService.clearSession(req.sessionToken);
+      await dataService.clearSession(req.sessionToken);
     }
     res.status(204).send();
   }),
@@ -115,12 +110,30 @@ authRouter.post(
       throw new AppError("Validation failed", 422, parsed.error.flatten());
     }
 
-    const token = await supabaseService.createPasswordResetToken(parsed.data.email);
-    res.json({
+    const resetTicket = await dataService.createPasswordResetToken(
+      parsed.data.email,
+      RESET_TOKEN_LIFETIME_MINUTES,
+    );
+
+    if (resetTicket) {
+      try {
+        await emailService.sendPasswordResetEmail({
+          to: parsed.data.email,
+          token: resetTicket.token,
+          expiresAt: resetTicket.expiresAt,
+          lifetimeMinutes: RESET_TOKEN_LIFETIME_MINUTES,
+        });
+      } catch (error) {
+        logger.error(
+          error,
+          "Password reset email failed to dispatch; link still issued to user record.",
+        );
+      }
+    }
+
+    res.status(202).json({
       status: "success",
-      data: {
-        resetToken: token ?? null,
-      },
+      message: "If an account matches the email provided, a reset link will arrive shortly.",
     });
   }),
 );
@@ -133,7 +146,7 @@ authRouter.post(
       throw new AppError("Validation failed", 422, parsed.error.flatten());
     }
 
-    const success = await supabaseService.resetPassword(parsed.data.token, parsed.data.password);
+    const success = await dataService.resetPassword(parsed.data.token, parsed.data.password);
     if (!success) {
       throw new AppError("Reset token invalid or expired", 400);
     }

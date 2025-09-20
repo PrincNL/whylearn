@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
@@ -10,6 +10,9 @@ import { z } from "zod";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { passwordSchema } from "@/app/auth/passwordSchema";
+import { resolveApiUrl } from "@/lib/api";
+import { useDemoIdentity } from "@/app/app/_hooks/use-demo-identity";
 
 const paceSchema = z
   .string()
@@ -32,7 +35,7 @@ const paceSchema = z
 
 const schema = z.object({
   email: z.string().email("Enter a valid email"),
-  password: z.string().min(8, "Use at least 8 characters"),
+  password: passwordSchema,
   goal: z.string().min(3, "Describe what you want to achieve"),
   preferredPaceHoursPerWeek: paceSchema,
 });
@@ -40,6 +43,20 @@ const schema = z.object({
 type FormValues = z.infer<typeof schema>;
 
 type SubmitState = "idle" | "loading" | "success" | "error";
+
+type RegisterResponse = {
+  user: { id: string };
+  session: { token: string };
+  userId?: string;
+  planId?: string;
+};
+
+type ApiResponse<T> = {
+  status: "success" | "error";
+  data?: T;
+  message?: string;
+  error?: string;
+};
 
 export default function SignupPage() {
   const searchParams = useSearchParams();
@@ -74,21 +91,41 @@ export default function SignupPage() {
 
   const [state, setState] = useState<SubmitState>("idle");
   const [message, setMessage] = useState<string | null>(null);
+  const { updateIdentity } = useDemoIdentity();
 
   const onSubmit = async (values: FormValues) => {
     setState("loading");
     setMessage(null);
     try {
-      const response = await fetch("/api/auth/register", {
+      const response = await fetch(resolveApiUrl("/api/auth/register"), {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(values),
       });
-      if (!response.ok) {
-        const payload = await response.json().catch(() => null);
-        const detail = payload?.message ?? payload?.error ?? "Registration failed";
+      const payload = (await response.json().catch(() => null)) as ApiResponse<RegisterResponse> | null;
+      if (!payload) {
+        throw new Error("Unexpected server response");
+      }
+      if (!response.ok || payload.status !== "success" || !payload.data) {
+        const detail = payload.message ?? payload.error ?? "Registration failed";
         throw new Error(detail);
       }
+
+      const { user, session, userId, planId } = payload.data;
+      if (!session?.token) {
+        throw new Error("Registration failed: session not issued");
+      }
+      const identityUserId = userId ?? user?.id;
+      if (!identityUserId) {
+        throw new Error("Registration failed: user missing");
+      }
+
+      updateIdentity({
+        userId: identityUserId,
+        planId: planId ?? "",
+        sessionToken: session.token,
+      });
+
       setState("success");
       setMessage("Account created! Redirecting to your dashboard...");
       setTimeout(() => {
@@ -118,7 +155,7 @@ export default function SignupPage() {
           <Label htmlFor="password">Password</Label>
           <Input id="password" type="password" autoComplete="new-password" {...register("password")} />
           {errors.password ? <p className="text-xs text-destructive">{errors.password.message}</p> : null}
-          <p className="text-xs text-muted-foreground">Use at least 8 characters with a mix of numbers or symbols.</p>
+          <p className="text-xs text-muted-foreground">Use at least 8 characters, including an uppercase letter, number, and special character.</p>
         </div>
         <div className="space-y-2">
           <Label htmlFor="goal">What would you like to achieve?</Label>
@@ -150,4 +187,3 @@ export default function SignupPage() {
     </div>
   );
 }
-

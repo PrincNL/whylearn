@@ -1,4 +1,4 @@
-﻿import Link from "next/link";
+import Link from "next/link";
 
 const links = [
   { href: "/legal/terms", label: "Terms of Service" },

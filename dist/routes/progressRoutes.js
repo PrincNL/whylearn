@@ -4,7 +4,7 @@ exports.progressRouter = void 0;
 const express_1 = require("express");
 const zod_1 = require("zod");
 const authMiddleware_1 = require("../middleware/authMiddleware");
-const supabaseService_1 = require("../services/supabaseService");
+const dataService_1 = require("../services/dataService");
 const appError_1 = require("../utils/appError");
 const asyncHandler_1 = require("../utils/asyncHandler");
 const statusSchema = zod_1.z.enum(["pending", "completed"]);
@@ -37,7 +37,7 @@ exports.progressRouter.post("/", (0, asyncHandler_1.asyncHandler)(async (req, re
     if (progressTimestamp) {
         payload.progressTimestamp = progressTimestamp;
     }
-    const result = await supabaseService_1.supabaseService.upsertTaskProgress(payload);
+    const result = await dataService_1.dataService.upsertTaskProgress(payload);
     res.status(200).json({ status: "success", data: result });
 }));
 exports.progressRouter.get("/:userId", (0, asyncHandler_1.asyncHandler)(async (req, res) => {
@@ -51,7 +51,7 @@ exports.progressRouter.get("/:userId", (0, asyncHandler_1.asyncHandler)(async (r
     if (!req.authUser || req.authUser.id !== parsedParams.data.userId) {
         throw new appError_1.AppError("Forbidden", 403);
     }
-    const overview = await supabaseService_1.supabaseService.getProgressOverview(parsedParams.data.userId, parsedParams.data.planId);
+    const overview = await dataService_1.dataService.getProgressOverview(parsedParams.data.userId, parsedParams.data.planId);
     res.json({ status: "success", data: overview });
 }));
 //# sourceMappingURL=progressRoutes.js.map

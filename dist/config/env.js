@@ -5,6 +5,7 @@ const dotenv_1 = require("dotenv");
 const zod_1 = require("zod");
 (0, dotenv_1.config)({ path: ".env", override: false, quiet: true });
 const envSchema = zod_1.z.object({
+    DATA_DIR: zod_1.z.string().default('.data'),
     PORT: zod_1.z.coerce.number().int().positive().default(4000),
     WEB_PORT: zod_1.z.coerce.number().int().positive().default(3000),
     STRIPE_SECRET_KEY: zod_1.z.string().optional(),

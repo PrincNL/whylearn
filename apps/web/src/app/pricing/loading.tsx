@@ -1,4 +1,4 @@
-﻿export default function LoadingPricing() {
+export default function LoadingPricing() {
   return (
     <div className="container flex flex-col gap-10 py-20">
       <div className="mx-auto flex flex-col items-center gap-4 text-center">

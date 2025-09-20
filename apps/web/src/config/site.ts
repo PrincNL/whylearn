@@ -1,4 +1,4 @@
-﻿export const siteConfig = {
+export const siteConfig = {
   name: "WhyLearn",
   description:
     "WhyLearn is the focused learning companion that helps independent professionals plan, track, and celebrate meaningful growth.",

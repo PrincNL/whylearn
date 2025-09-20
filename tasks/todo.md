@@ -39,7 +39,7 @@
 ---
 
 ## 3) Backend Integratie
-- [x] Vervang Supabase-services door calls naar `JsonFileDriver`.
+- [x] Backend API gebruikt de DataService (JsonFileDriver) voor alle opslagkoppelingen.
 - [x] Auth flow: signup/login/reset → user object + hashed password opslaan.
 - [x] Progress: POST/GET → update JSON progress + gamification.
 - [x] Rewards: badges/points automatisch bijhouden + opslaan.
@@ -162,4 +162,6 @@
 - Tests uitgebreid: loginformulier (RTL), end-to-end JSON flow met Supertest, Playwright scenario en LHCI-config met 0.95-doelen.
 - Express/Next integratie vastgelegd met vitest; health check en wildcard routing blijven werken.
 - README herwerkt, env-templates toegevoegd en businessplan aangevuld voor onboarding/QA.
-
+## Review 2025-09-22
+- npm-cachebestanden waren eigendom van root waardoor `npm install` faalde met EACCES; eigendom teruggezet naar `toshan:staff`.
+- `npm install` opnieuw gedraaid; installatie voltooid (alleen bekende npm warnings en 12 kwetsbaarheden nog open volgens audit).

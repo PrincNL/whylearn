@@ -5,7 +5,7 @@ const express_1 = require("express");
 const zod_1 = require("zod");
 const authMiddleware_1 = require("../middleware/authMiddleware");
 const learningPlanService_1 = require("../services/learningPlanService");
-const supabaseService_1 = require("../services/supabaseService");
+const dataService_1 = require("../services/dataService");
 const appError_1 = require("../utils/appError");
 const asyncHandler_1 = require("../utils/asyncHandler");
 const passwordPolicy = zod_1.z
@@ -34,11 +34,11 @@ const resetConfirmSchema = zod_1.z.object({
 const authRouter = (0, express_1.Router)();
 exports.authRouter = authRouter;
 const buildAuthResponse = async (userId) => {
-    const user = await supabaseService_1.supabaseService.getUserById(userId);
+    const user = await dataService_1.dataService.getUserById(userId);
     if (!user) {
         throw new appError_1.AppError("User not found", 404);
     }
-    return supabaseService_1.supabaseService.sanitizeUser(user);
+    return dataService_1.dataService.sanitizeUser(user);
 };
 authRouter.post("/register", (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     const parsed = registrationSchema.safeParse(req.body);
@@ -47,8 +47,8 @@ authRouter.post("/register", (0, asyncHandler_1.asyncHandler)(async (req, res) =
     }
     const { email, password, goal, preferredPaceHoursPerWeek } = parsed.data;
     const plan = (0, learningPlanService_1.generateLearningPlan)(goal, preferredPaceHoursPerWeek);
-    const { userId, planId } = await supabaseService_1.supabaseService.registerUser(email, password, plan.goal, plan);
-    const session = await supabaseService_1.supabaseService.createSession(userId);
+    const { userId, planId } = await dataService_1.dataService.registerUser(email, password, plan.goal, plan);
+    const session = await dataService_1.dataService.createSession(userId);
     const user = await buildAuthResponse(userId);
     res.status(201).json({
         status: "success",
@@ -66,22 +66,22 @@ authRouter.post("/login", (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     if (!parsed.success) {
         throw new appError_1.AppError("Validation failed", 422, parsed.error.flatten());
     }
-    const user = await supabaseService_1.supabaseService.verifyUserCredentials(parsed.data.email, parsed.data.password);
+    const user = await dataService_1.dataService.verifyUserCredentials(parsed.data.email, parsed.data.password);
     if (!user) {
         throw new appError_1.AppError("Invalid credentials", 401);
     }
-    const session = await supabaseService_1.supabaseService.createSession(user.id);
+    const session = await dataService_1.dataService.createSession(user.id);
     res.json({
         status: "success",
         data: {
-            user: supabaseService_1.supabaseService.sanitizeUser(user),
+            user: dataService_1.dataService.sanitizeUser(user),
             session,
         },
     });
 }));
 authRouter.post("/logout", authMiddleware_1.requireAuth, (0, asyncHandler_1.asyncHandler)(async (req, res) => {
     if (req.sessionToken) {
-        await supabaseService_1.supabaseService.clearSession(req.sessionToken);
+        await dataService_1.dataService.clearSession(req.sessionToken);
     }
     res.status(204).send();
 }));
@@ -90,7 +90,7 @@ authRouter.post("/reset/request", (0, asyncHandler_1.asyncHandler)(async (req, r
     if (!parsed.success) {
         throw new appError_1.AppError("Validation failed", 422, parsed.error.flatten());
     }
-    const token = await supabaseService_1.supabaseService.createPasswordResetToken(parsed.data.email);
+    const token = await dataService_1.dataService.createPasswordResetToken(parsed.data.email);
     res.json({
         status: "success",
         data: {
@@ -103,7 +103,7 @@ authRouter.post("/reset/confirm", (0, asyncHandler_1.asyncHandler)(async (req, r
     if (!parsed.success) {
         throw new appError_1.AppError("Validation failed", 422, parsed.error.flatten());
     }
-    const success = await supabaseService_1.supabaseService.resetPassword(parsed.data.token, parsed.data.password);
+    const success = await dataService_1.dataService.resetPassword(parsed.data.token, parsed.data.password);
     if (!success) {
         throw new appError_1.AppError("Reset token invalid or expired", 400);
     }

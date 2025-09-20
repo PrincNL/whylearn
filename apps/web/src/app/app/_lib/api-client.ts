@@ -1,4 +1,4 @@
-﻿'use client';
+'use client';
 
 import type { DemoIdentity } from "../_hooks/use-demo-identity";
 

@@ -1,4 +1,4 @@
-﻿const sections = [
+const sections = [
   {
     title: "1. Data collection",
     body: `We collect account details (email, name) and workspace activity required to deliver learning plans, progress analytics, and coaching snapshots. We do not sell personal data.`,

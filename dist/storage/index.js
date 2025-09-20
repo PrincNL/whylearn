@@ -15,11 +15,12 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.SqliteDriver = exports.JsonFileDriver = exports.initStorage = exports.setStorageAdapter = exports.getStorageAdapter = void 0;
+const env_1 = require("../config/env");
 const JsonFileDriver_1 = require("./json/JsonFileDriver");
 let adapter = null;
 const getStorageAdapter = () => {
     if (!adapter) {
-        adapter = new JsonFileDriver_1.JsonFileDriver();
+        adapter = new JsonFileDriver_1.JsonFileDriver({ baseDir: env_1.env.DATA_DIR });
     }
     return adapter;
 };

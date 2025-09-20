@@ -1,4 +1,4 @@
-﻿export const demoPlan = {
+export const demoPlan = {
   goal: "Launch design leadership cohort",
   motivation: "Guide independent designers to grow into confident leaders.",
   milestones: [

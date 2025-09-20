@@ -4,7 +4,7 @@ import type {
   GamificationStatus,
   ProgressMilestoneOverview,
   ProgressOverview,
-} from '../src/services/supabaseService';
+} from '../src/services/dataService';
 import { CoachingService } from '../src/services/coachingService';
 
 const progressMock: ProgressOverview = {
@@ -44,7 +44,7 @@ const gamificationMock: GamificationStatus = {
 
 describe('CoachingService', () => {
   it('generates advice using progress and gamification context', async () => {
-    const supabaseMock = {
+    const storeMock = {
       getProgressOverview: vi.fn().mockResolvedValue(progressMock),
       getGamificationStatus: vi.fn().mockResolvedValue(gamificationMock),
       recordCoachingFeedback: vi.fn().mockResolvedValue({
@@ -63,14 +63,14 @@ describe('CoachingService', () => {
       fetchCoachingFeedback: vi.fn().mockResolvedValue([] as CoachingFeedback[]),
     };
 
-    const service = new CoachingService(supabaseMock as any);
+    const service = new CoachingService(storeMock as any);
     const result = await service.generateSession({ userId: 'user-123' });
 
     expect(result.gamification.totalPoints).toBe(150);
     expect(result.advice.focusAreas.length).toBeGreaterThan(0);
     expect(result.advice.recommendedMilestones).toContain('Practice');
     expect(result.advice.motivationalMessage).toContain('Badges');
-    expect(supabaseMock.recordCoachingFeedback).toHaveBeenCalledWith(
+    expect(storeMock.recordCoachingFeedback).toHaveBeenCalledWith(
       expect.objectContaining({ userId: 'user-123', planId: 'plan-1' })
     );
   });
@@ -92,13 +92,13 @@ describe('CoachingService', () => {
       },
     ];
 
-    const supabaseMock = {
+    const storeMock = {
       getProgressOverview: vi.fn().mockResolvedValue(progressMock),
       getGamificationStatus: vi.fn().mockResolvedValue(gamificationMock),
       fetchCoachingFeedback: vi.fn().mockResolvedValue(history),
     };
 
-    const service = new CoachingService(supabaseMock as any);
+    const service = new CoachingService(storeMock as any);
     const status = await service.getCoachingStatus('user-123');
 
     expect(status.latestAdvice?.summary).toBe('Focus on practice');

@@ -4,7 +4,7 @@ exports.renderHomePage = void 0;
 const features = [
     {
         title: 'AI learning plans',
-        description: 'Personalised, deterministic plans combine Supabase data with coaching rules so progress stays trackable.',
+        description: 'Personalised, deterministic plans combine the local data store with coaching rules so progress stays trackable.',
     },
     {
         title: 'Gamification that sticks',
@@ -16,7 +16,7 @@ const features = [
     },
     {
         title: 'Subscription ready',
-        description: 'Stripe-ready tiers link to Supabase entitlements, so upgrades unlock premium content instantly.',
+        description: 'Stripe-ready tiers link to data-service entitlements stored alongside learner progress, so upgrades unlock premium content instantly.',
     },
 ];
 const renderFeatureList = () => features

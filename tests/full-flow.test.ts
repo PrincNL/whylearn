@@ -1,10 +1,11 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it } from "vitest";
 
 import { createApp } from "../src/server";
 import { setupTestStorage } from "./helpers/storage";
+import { describeIfNetwork } from "./helpers/network";
 
-describe("JSON storage premium learning flow", () => {
+describeIfNetwork("JSON storage premium learning flow", () => {
   let cleanup: (() => void) | undefined;
   let app = createApp();
 
@@ -30,25 +31,29 @@ describe("JSON storage premium learning flow", () => {
     const sessionToken: string = register.body.data.session.token;
     const userId: string = register.body.data.user.id;
     const planId: string = register.body.data.planId;
+    const planMilestones: Array<{ id: string }> = register.body.data.plan.milestones;
+    const primaryMilestoneId = planMilestones[0]?.id ?? "milestone-1";
+
+    const authHeader = `Bearer ${sessionToken}`;
 
     const progress = await request(app)
       .post("/api/progress")
-      .set("Authorization", Bearer )
-      .send({ userId, planId, milestoneId: "milestone-1", status: "completed" });
+      .set("Authorization", authHeader)
+      .send({ userId, planId, milestoneId: primaryMilestoneId, status: "completed" });
 
     expect(progress.status).toBe(200);
     expect(progress.body.data.gamification.totalPoints).toBeGreaterThan(0);
 
     const overview = await request(app)
-      .get(/api/progress/)
-      .set("Authorization", Bearer );
+      .get(`/api/progress/${userId}`)
+      .set("Authorization", authHeader);
 
     expect(overview.status).toBe(200);
     expect(overview.body.data.completedMilestones).toBeGreaterThan(0);
 
     const manualReward = await request(app)
       .post("/api/gamification")
-      .set("Authorization", Bearer )
+      .set("Authorization", authHeader)
       .send({ userId, planId, points: 25 });
 
     expect(manualReward.status).toBe(200);
@@ -58,7 +63,7 @@ describe("JSON storage premium learning flow", () => {
 
     const upgrade = await request(app)
       .post("/api/subscriptions")
-      .set("Authorization", Bearer )
+      .set("Authorization", authHeader)
       .send({ userId, tierId: "tier-plus" });
 
     expect(upgrade.status).toBe(200);
@@ -67,15 +72,16 @@ describe("JSON storage premium learning flow", () => {
 
     const coaching = await request(app)
       .post("/api/coaching")
-      .set("Authorization", Bearer )
+      .set("Authorization", authHeader)
       .send({ userId, planId, notes: "Need focus" });
 
     expect(coaching.status).toBe(200);
     expect(coaching.body.data.advice.summary).toBeTruthy();
 
     const status = await request(app)
-      .get(/api/coaching/)
-      .set("Authorization", Bearer );
+      .get(`/api/coaching/${userId}`)
+      .set("Authorization", authHeader)
+      .query({ planId });
 
     expect(status.status).toBe(200);
     expect(status.body.data.history.length).toBeGreaterThanOrEqual(1);

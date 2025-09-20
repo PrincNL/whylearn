@@ -20,7 +20,7 @@ test.beforeAll(async () => {
   await new Promise<void>((resolve) => {
     server = app.listen(0, "127.0.0.1", () => {
       const address = server.address() as AddressInfo;
-      baseURL = http://127.0.0.1:;
+      baseURL = `http://127.0.0.1:${address.port}`;
       resolve();
     });
   });
@@ -41,7 +41,7 @@ test.afterAll(async () => {
 });
 
 test("signup to premium coaching flow", async ({ request }) => {
-  const registerResponse = await request.post(${baseURL}/api/auth/register, {
+  const registerResponse = await request.post(`${baseURL}/api/auth/register`, {
     data: {
       email: "playwright-flow@example.com",
       password: "StrongP@ssw0rd1",
@@ -54,19 +54,21 @@ test("signup to premium coaching flow", async ({ request }) => {
   const token: string = registerBody.data.session.token;
   const userId: string = registerBody.data.user.id;
   const planId: string = registerBody.data.planId;
+  const planMilestones: Array<{ id: string }> = registerBody.data.plan.milestones;
+  const primaryMilestoneId = planMilestones[0]?.id ?? "milestone-1";
 
-  const authHeaders = { Authorization: Bearer  };
+  const authHeaders = { Authorization: `Bearer ${token}` };
 
-  const progressResponse = await request.post(${baseURL}/api/progress, {
+  const progressResponse = await request.post(`${baseURL}/api/progress`, {
     headers: authHeaders,
-    data: { userId, planId, milestoneId: "milestone-42", status: "completed" },
+    data: { userId, planId, milestoneId: primaryMilestoneId, status: "completed" },
   });
 
   expect(progressResponse.status()).toBe(200);
   const progressBody = await progressResponse.json();
   expect(progressBody.data.gamification.totalPoints).toBeGreaterThan(0);
 
-  const upgradeResponse = await request.post(${baseURL}/api/subscriptions, {
+  const upgradeResponse = await request.post(`${baseURL}/api/subscriptions`, {
     headers: authHeaders,
     data: { userId, tierId: "tier-plus" },
   });
@@ -75,7 +77,7 @@ test("signup to premium coaching flow", async ({ request }) => {
   const upgradeBody = await upgradeResponse.json();
   expect(upgradeBody.data.subscription.entitlements).toContain("ai_coaching");
 
-  const coachingResponse = await request.post(${baseURL}/api/coaching, {
+  const coachingResponse = await request.post(`${baseURL}/api/coaching`, {
     headers: authHeaders,
     data: { userId, planId, notes: "Need motivational boost" },
   });
@@ -84,8 +86,9 @@ test("signup to premium coaching flow", async ({ request }) => {
   const coachingBody = await coachingResponse.json();
   expect(coachingBody.data.advice.summary).toBeTruthy();
 
-  const premiumRouteResponse = await request.get(${baseURL}/api/coaching/, {
+  const premiumRouteResponse = await request.get(`${baseURL}/api/coaching/${userId}`, {
     headers: authHeaders,
+    params: { planId },
   });
 
   expect(premiumRouteResponse.status()).toBe(200);

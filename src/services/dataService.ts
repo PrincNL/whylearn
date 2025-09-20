@@ -22,6 +22,7 @@ import type {
 export interface RegistrationResult {
   userId: string;
   planId: string;
+  user: UserRecord;
 }
 
 export interface ProgressMilestoneOverview {
@@ -285,7 +286,7 @@ const verifyPassword = (password: string, hash: string): boolean => {
   return timingSafeEqual(actual, expected);
 };
 
-export class SupabaseService {
+export class DataService {
   private adapter: StorageAdapter | null;
 
   constructor(adapter?: StorageAdapter) {
@@ -314,13 +315,15 @@ export class SupabaseService {
     const planId = createRecordId("plan");
     const passwordHash = hashPassword(password);
 
+    let userRecord: UserRecord | null = null;
+
     await driver.transaction(
       datasetDefinitions.users,
       (state) => {
         if (state.records.some((record) => record.email.toLowerCase() === normalizedEmail)) {
           throw new Error("Email is already registered");
         }
-        state.records.push({
+        const record: UserRecord = {
           id: userId,
           email: normalizedEmail,
           passwordHash,
@@ -334,7 +337,9 @@ export class SupabaseService {
           passwordResetExpiresAt: null,
           createdAt: now,
           updatedAt: now,
-        });
+        };
+        state.records.push(record);
+        userRecord = record;
         return state;
       },
       this.txOpts("register-user", userId),
@@ -358,7 +363,11 @@ export class SupabaseService {
 
     await this.ensureGamificationRecord(userId, planId, plan.milestones.length);
 
-    return { userId, planId };
+    if (!userRecord) {
+      throw new Error("Registration failed");
+    }
+
+    return { userId, planId, user: userRecord };
   }
 
   async verifyUserCredentials(email: string, password: string): Promise<UserRecord | null> {
@@ -419,7 +428,10 @@ export class SupabaseService {
     );
   }
 
-  async createPasswordResetToken(email: string, lifetimeMinutes = 30): Promise<string | null> {
+  async createPasswordResetToken(
+    email: string,
+    lifetimeMinutes = 30,
+  ): Promise<{ token: string; expiresAt: string } | null> {
     const user = await this.findUserByEmail(email);
     if (!user) {
       return null;
@@ -448,7 +460,7 @@ export class SupabaseService {
       this.txOpts("password-reset-issue", user.id),
     );
 
-    return token;
+    return { token, expiresAt };
   }
 
   async resetPassword(token: string, newPassword: string): Promise<boolean> {
@@ -1165,6 +1177,6 @@ export class SupabaseService {
   }
 }
 
-export const supabaseService = new SupabaseService();
+export const dataService = new DataService();
 
 export type { SubscriptionStatusValue } from '../storage/types';

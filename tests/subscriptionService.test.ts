@@ -5,7 +5,7 @@ import type {
   SubscriptionTier,
   UserSubscriptionStatus,
   SubscriptionStatusValue,
-} from '../src/services/supabaseService';
+} from '../src/services/dataService';
 
 describe('SubscriptionService', () => {
   const activeStatus: UserSubscriptionStatus = {
@@ -19,7 +19,7 @@ describe('SubscriptionService', () => {
   };
 
   it('upgrades subscription without Stripe', async () => {
-    const supabaseMock = {
+    const storeMock = {
       getSubscriptionTier: vi.fn().mockResolvedValue({
         id: 'premium',
         name: 'Premium',
@@ -40,29 +40,29 @@ describe('SubscriptionService', () => {
       listEntitlementsForTier: vi.fn(),
     } as any;
 
-    const service = new SubscriptionService({ supabase: supabaseMock, stripe: null });
+    const service = new SubscriptionService({ store: storeMock, stripe: null });
 
     const result = await service.changeSubscription({ userId: 'user-123', tierId: 'premium' });
 
     expect(result.status).toBe('active');
     expect(result.subscription.tierId).toBe('premium');
     expect(result.checkoutSessionId).toBeUndefined();
-    expect(supabaseMock.upsertUserSubscription).toHaveBeenCalledWith(
+    expect(storeMock.upsertUserSubscription).toHaveBeenCalledWith(
       expect.objectContaining({ userId: 'user-123', tierId: 'premium', status: 'active' })
     );
   });
 
   it('asserts entitlement for active subscription', async () => {
-    const supabaseMock = {
+    const storeMock = {
       getUserSubscriptionStatus: vi.fn().mockResolvedValue(activeStatus),
     } as any;
 
-    const service = new SubscriptionService({ supabase: supabaseMock, stripe: null });
+    const service = new SubscriptionService({ store: storeMock, stripe: null });
     await expect(service.assertEntitlement('user-123', 'ai_coaching')).resolves.toBeUndefined();
   });
 
   it('throws when entitlement missing', async () => {
-    const supabaseMock = {
+    const storeMock = {
       getUserSubscriptionStatus: vi.fn().mockResolvedValue({
         userId: 'user-123',
         tierId: 'basic',
@@ -72,7 +72,7 @@ describe('SubscriptionService', () => {
       } satisfies UserSubscriptionStatus),
     } as any;
 
-    const service = new SubscriptionService({ supabase: supabaseMock, stripe: null });
+    const service = new SubscriptionService({ store: storeMock, stripe: null });
 
     await expect(service.assertEntitlement('user-123', 'ai_coaching')).rejects.toBeInstanceOf(AppError);
   });

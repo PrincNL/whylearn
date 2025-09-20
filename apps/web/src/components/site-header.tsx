@@ -15,17 +15,27 @@ export function SiteHeader() {
   const { t } = useI18n();
 
   return (
-    <header className="sticky top-0 z-50 border-b border-border/60 bg-background/80 backdrop-blur">
+    <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-950/80 text-slate-100 backdrop-blur">
       <div className="container flex h-16 items-center justify-between gap-4">
-        <div className="flex items-center gap-3">
-          <Link href="/" className="flex items-center gap-2 text-lg font-semibold tracking-tight">
-            <span className="h-9 w-9 rounded-lg bg-primary/10 text-primary shadow-sm" aria-hidden="true" />
-            <span className="hidden text-foreground sm:inline">{siteConfig.name}</span>
+        <div className="flex items-center gap-4">
+          <Link
+            href="/"
+            className="flex items-center gap-2 text-lg font-semibold tracking-tight text-slate-100"
+          >
+            <span className="h-9 w-9 rounded-xl bg-gradient-to-br from-cyan-400/60 to-blue-500/40 shadow-[0_12px_30px_-18px_rgba(56,189,248,0.8)]" aria-hidden="true" />
+            <span className="hidden sm:inline">{siteConfig.name}</span>
             <span className="sr-only">{siteConfig.name}</span>
           </Link>
-          <nav aria-label={t("nav.primary")} className="hidden gap-6 text-sm font-medium text-muted-foreground md:flex">
+          <nav
+            aria-label={t("nav.primary")}
+            className="hidden gap-6 text-sm font-medium text-slate-300 md:flex"
+          >
             {siteConfig.mainNav.map((item) => (
-              <Link key={item.href} href={item.href} className="transition-colors hover:text-foreground focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-primary">
+              <Link
+                key={item.href}
+                href={item.href}
+                className="transition-colors hover:text-slate-50 focus-visible:outline focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-cyan-400"
+              >
                 {item.labelKey ? t(item.labelKey) : item.title}
               </Link>
             ))}
@@ -35,7 +45,11 @@ export function SiteHeader() {
           <SubscriptionBadge />
           <LanguageToggle />
           <ThemeToggle />
-          <Button asChild size="sm" className="hidden md:inline-flex">
+          <Button
+            asChild
+            size="sm"
+            className="hidden rounded-xl bg-gradient-to-r from-cyan-400 via-sky-400 to-blue-500 text-slate-950 shadow-[0_12px_30px_-18px_rgba(56,189,248,0.65)] md:inline-flex"
+          >
             <Link href="/auth/signup">{t("cta.startTrial")}</Link>
           </Button>
         </div>
@@ -62,11 +76,10 @@ function SubscriptionBadge() {
   }, [state, subscription, statusMeta]);
 
   const attention = statusMeta.category === "grace" || statusMeta.category === "ended" || statusMeta.category === "downgraded" || statusMeta.category === "unknown";
-  const baseClasses = "hidden rounded-full border px-3 py-1 text-xs font-medium md:inline-block";
+  const baseClasses = "hidden rounded-full border px-3 py-1 text-xs font-semibold uppercase tracking-[0.18em] md:inline-block";
   const tone = attention
-    ? "border-destructive/60 bg-destructive/10 text-destructive"
-    : "border-primary/40 bg-primary/10 text-primary";
+    ? "border-amber-300/50 bg-amber-400/15 text-amber-200"
+    : "border-cyan-300/50 bg-cyan-400/15 text-cyan-200";
 
   return <span className={`${baseClasses} ${tone}`}>{label}</span>;
 }
-

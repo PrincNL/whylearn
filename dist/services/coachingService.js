@@ -1,18 +1,18 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.coachingService = exports.CoachingService = void 0;
-const supabaseService_1 = require("./supabaseService");
+const dataService_1 = require("./dataService");
 const toPercentage = (ratio) => `${Math.round(ratio * 100)}%`;
 class CoachingService {
-    supabase;
-    constructor(supabase = supabaseService_1.supabaseService) {
-        this.supabase = supabase;
+    store;
+    constructor(store = dataService_1.dataService) {
+        this.store = store;
     }
     async generateSession(input) {
-        const progress = await this.supabase.getProgressOverview(input.userId, input.planId);
-        const gamification = await this.supabase.getGamificationStatus(input.userId, progress.planId);
+        const progress = await this.store.getProgressOverview(input.userId, input.planId);
+        const gamification = await this.store.getGamificationStatus(input.userId, progress.planId);
         const advice = this.buildAdvice({ progress, gamification });
-        const feedbackRecord = await this.supabase.recordCoachingFeedback({
+        const feedbackRecord = await this.store.recordCoachingFeedback({
             userId: input.userId,
             planId: gamification.planId,
             summary: advice.summary,
@@ -29,7 +29,7 @@ class CoachingService {
                 badges: gamification.badges.map((badge) => badge.code),
             },
         });
-        const history = await this.supabase.fetchCoachingFeedback(input.userId, gamification.planId, 5);
+        const history = await this.store.fetchCoachingFeedback(input.userId, gamification.planId, 5);
         return {
             advice,
             progress,
@@ -38,9 +38,9 @@ class CoachingService {
         };
     }
     async getCoachingStatus(userId, planId, limit = 5) {
-        const progress = await this.supabase.getProgressOverview(userId, planId);
-        const gamification = await this.supabase.getGamificationStatus(userId, progress.planId);
-        const history = await this.supabase.fetchCoachingFeedback(userId, gamification.planId, limit);
+        const progress = await this.store.getProgressOverview(userId, planId);
+        const gamification = await this.store.getGamificationStatus(userId, progress.planId);
+        const history = await this.store.fetchCoachingFeedback(userId, gamification.planId, limit);
         const latestAdvice = history[0];
         const status = {
             progress,

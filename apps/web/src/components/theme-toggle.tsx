@@ -1,11 +1,17 @@
 "use client";
 
+import { useEffect, useState } from "react";
 import { Monitor, Moon, Sun } from "lucide-react";
 
 import { ThemeMode, useTheme } from "@/components/theme-provider";
 
 export function ThemeToggle() {
   const { theme, resolvedTheme, setTheme } = useTheme();
+  const [isMounted, setIsMounted] = useState(false);
+
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   const icon = (() => {
     if (theme === "system") {
@@ -15,16 +21,21 @@ export function ThemeToggle() {
   })();
 
   const resolvedIcon = resolvedTheme === "dark" ? <Moon aria-hidden="true" className="h-4 w-4" /> : <Sun aria-hidden="true" className="h-4 w-4" />;
+  const fallbackResolvedIcon = <Sun aria-hidden="true" className="h-4 w-4" />;
+  const fallbackThemeIcon = <Monitor aria-hidden="true" className="h-4 w-4" />;
+
+  const displayResolvedIcon = isMounted ? resolvedIcon : fallbackResolvedIcon;
+  const displayThemeIcon = isMounted ? icon : fallbackThemeIcon;
 
   return (
     <div className="flex items-center gap-2">
       <div className="flex h-9 w-9 items-center justify-center rounded-md border border-border bg-muted/40 text-muted-foreground">
-        {resolvedIcon}
+        {displayResolvedIcon}
       </div>
       <label className="flex items-center gap-2 text-sm text-muted-foreground" htmlFor="theme-select">
         <span className="sr-only">Theme</span>
         <div className="flex h-8 w-8 items-center justify-center rounded-md border border-border bg-background text-muted-foreground">
-          {icon}
+          {displayThemeIcon}
         </div>
         <select
           id="theme-select"

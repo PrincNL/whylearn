@@ -1,0 +1,67 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "id": "68fa3ce0-6157-477f-a409-ca99c5c04222",
+      "userId": "19be2745-d977-44f5-9acb-61eb11945909",
+      "goal": "Be A Programmer",
+      "plan": {
+        "goal": "Be A Programmer",
+        "summary": "A focused roadmap to master Be A Programmer through fundamentals, deliberate practice, and reflective improvements.",
+        "motivation": "Stay consistent�Be A Programmer rewards small, steady wins. Celebrate each completed milestone and share progress with your accountability circle.",
+        "milestones": [
+          {
+            "id": "a072e61b-7582-4bfb-a797-f22703a1df15",
+            "title": "Be A Programmer Fundamentals",
+            "description": "Learn the key concepts that define Be A Programmer. Focus on vocabulary, methodologies, and the mindset needed to excel.",
+            "durationHours": 10,
+            "resources": [
+              "Official Be A Programmer foundations guide",
+              "Be A Programmer community forum",
+              "Hands-on introductory challenges for Be A Programmer"
+            ]
+          },
+          {
+            "id": "99187b18-de8d-402b-bdab-2525d3289d1c",
+            "title": "Practice Be A Programmer Skills",
+            "description": "Apply what you learn through curated exercises tailored to Be A Programmer. Track progress, capture reflections, and iterate on mistakes.",
+            "durationHours": 14,
+            "resources": [
+              "Official Be A Programmer foundations guide",
+              "Be A Programmer community forum",
+              "Hands-on practice challenges for Be A Programmer"
+            ]
+          },
+          {
+            "id": "a3d1b2e3-2cb7-4e50-9706-b34145cb40e5",
+            "title": "Build a Be A Programmer Project",
+            "description": "Consolidate your knowledge by delivering a portfolio-ready project aligned with your Be A Programmer objective.",
+            "durationHours": 10,
+            "resources": [
+              "Official Be A Programmer foundations guide",
+              "Be A Programmer community forum",
+              "Hands-on project-based challenges for Be A Programmer"
+            ]
+          },
+          {
+            "id": "c0e9505a-888f-4a7a-a2de-8232a3bf3d90",
+            "title": "Reflect & Optimize",
+            "description": "Review outcomes, gather feedback, and adjust the next steps to keep momentum toward Be A Programmer.",
+            "durationHours": 6,
+            "resources": [
+              "Official Be A Programmer foundations guide",
+              "Be A Programmer community forum",
+              "Hands-on reflection challenges for Be A Programmer"
+            ]
+          }
+        ],
+        "totalDurationHours": 40,
+        "recommendedPaceHoursPerWeek": 8,
+        "createdAt": "2025-09-19T21:22:04.621Z"
+      },
+      "createdAt": "2025-09-19T21:22:04.729Z",
+      "updatedAt": "2025-09-19T21:22:04.729Z"
+    }
+  ],
+  "lastUpdatedAt": "2025-09-19T21:22:04.637Z"
+}

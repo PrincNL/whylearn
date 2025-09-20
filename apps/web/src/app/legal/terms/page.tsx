@@ -1,4 +1,4 @@
-﻿const sections = [
+const sections = [
   {
     title: "1. Acceptance of terms",
     body: `By using WhyLearn, you agree to these Terms of Service. The platform is designed for professional learning teams and independent practitioners. If you do not agree, please discontinue access immediately.`,

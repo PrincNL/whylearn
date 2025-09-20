@@ -1,4 +1,4 @@
-﻿export default function LoadingApp() {
+export default function LoadingApp() {
   return (
     <div className="container flex min-h-[calc(100vh-4rem)] flex-col gap-4 py-10">
       <div className="space-y-3">

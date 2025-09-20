@@ -2,8 +2,8 @@ import type {
   CoachingFeedback,
   GamificationStatus,
   ProgressOverview,
-} from './supabaseService';
-import { supabaseService } from './supabaseService';
+} from './dataService';
+import { dataService } from './dataService';
 
 export interface CoachingAdvice {
   summary: string;
@@ -44,14 +44,14 @@ interface CoachingContext {
 const toPercentage = (ratio: number) => `${Math.round(ratio * 100)}%`;
 
 export class CoachingService {
-  constructor(private readonly supabase = supabaseService) {}
+  constructor(private readonly store = dataService) {}
 
   async generateSession(input: GenerateCoachingInput): Promise<CoachingSessionResponse> {
-    const progress = await this.supabase.getProgressOverview(input.userId, input.planId);
-    const gamification = await this.supabase.getGamificationStatus(input.userId, progress.planId);
+    const progress = await this.store.getProgressOverview(input.userId, input.planId);
+    const gamification = await this.store.getGamificationStatus(input.userId, progress.planId);
     const advice = this.buildAdvice({ progress, gamification });
 
-    const feedbackRecord = await this.supabase.recordCoachingFeedback({
+    const feedbackRecord = await this.store.recordCoachingFeedback({
       userId: input.userId,
       planId: gamification.planId,
       summary: advice.summary,
@@ -69,7 +69,7 @@ export class CoachingService {
       },
     });
 
-    const history = await this.supabase.fetchCoachingFeedback(input.userId, gamification.planId, 5);
+    const history = await this.store.fetchCoachingFeedback(input.userId, gamification.planId, 5);
 
     return {
       advice,
@@ -80,9 +80,9 @@ export class CoachingService {
   }
 
   async getCoachingStatus(userId: string, planId?: string, limit = 5): Promise<CoachingStatusResponse> {
-    const progress = await this.supabase.getProgressOverview(userId, planId);
-    const gamification = await this.supabase.getGamificationStatus(userId, progress.planId);
-    const history = await this.supabase.fetchCoachingFeedback(userId, gamification.planId, limit);
+    const progress = await this.store.getProgressOverview(userId, planId);
+    const gamification = await this.store.getGamificationStatus(userId, progress.planId);
+    const history = await this.store.fetchCoachingFeedback(userId, gamification.planId, limit);
     const latestAdvice = history[0];
 
     const status: CoachingStatusResponse = {
@@ -109,7 +109,7 @@ export class CoachingService {
 
     const badgeSummary = gamification.badges.length
       ? `Badges: ${gamification.badges.map((badge) => badge.name).join(', ')}`
-      : 'Nog geen badges — tijd om er een te verdienen!';
+      : 'Nog geen badges - tijd om er een te verdienen!';
 
     const summary = `Je hebt ${progress.completedMilestones}/${progress.totalMilestones} mijlpalen voltooid (`
       + `${toPercentage(completionRate)}). Level ${gamification.level} met ${gamification.totalPoints} punten.`;

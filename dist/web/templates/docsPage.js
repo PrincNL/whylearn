@@ -141,7 +141,7 @@ const renderDocsPage = () => `
         <p>Quick links to core endpoints for onboarding, plan progress, gamification, subscriptions, and coaching.</p>
       </header>
       <main>
-        ${section('Getting started', 'Use the Supabase credentials in .env to configure authentication. The /api/auth/register endpoint returns a seeded learning plan for a user.')} 
+        ${section('Getting started', 'Initialise the local data store (.data by default, configurable via DATA_DIR) before calling /api/auth/register; it seeds a learning plan for each new user.')} 
         ${section('Track engagement', 'Progress events, gamification rewards, and coaching advice feed into the overall learner picture. All responses include ready-made JSON for dashboards.')} 
         <section class="card">
           <h2>Endpoints</h2>

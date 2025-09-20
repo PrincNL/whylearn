@@ -1,4 +1,4 @@
-﻿import type { ReactNode } from "react";
+import type { ReactNode } from "react";
 
 import { AppNav } from "./_components/app-nav";
 import { IdentityBanner } from "./_components/identity-banner";

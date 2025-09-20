@@ -1,4 +1,4 @@
-﻿export type ProgressStatus = 'pending' | 'completed';
+export type ProgressStatus = 'pending' | 'completed';
 
 export interface ProgressMilestoneOverview {
   milestoneId: string;

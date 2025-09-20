@@ -5,7 +5,7 @@ import path from "node:path";
 import { JsonFileDriver } from "../../src/storage/json/JsonFileDriver";
 import { setStorageAdapter } from "../../src/storage";
 import type { StorageAdapter } from "../../src/storage/StorageAdapter";
-import { supabaseService } from "../../src/services/supabaseService";
+import { dataService } from "../../src/services/dataService";
 
 export interface TestStorageContext {
   baseDir: string;
@@ -18,13 +18,13 @@ export const setupTestStorage = async (): Promise<TestStorageContext> => {
   const adapter = new JsonFileDriver({ baseDir });
   await adapter.init();
   setStorageAdapter(adapter);
-  supabaseService.useAdapter(adapter);
+  dataService.useAdapter(adapter);
 
   return {
     baseDir,
     adapter,
     cleanup: () => {
-      supabaseService.useAdapter(null);
+      dataService.useAdapter(null);
       setStorageAdapter(null);
       fs.rmSync(baseDir, { recursive: true, force: true });
     },

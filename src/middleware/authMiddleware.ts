@@ -1,6 +1,6 @@
 import type { RequestHandler } from "express";
 
-import { supabaseService } from "../services/supabaseService";
+import { dataService } from "../services/dataService";
 import { subscriptionService } from "../services/subscriptionService";
 
 const isSessionHeader = (token: string | undefined | null): token is string =>
@@ -14,9 +14,6 @@ const extractToken = (req: Parameters<RequestHandler>[0]): string | null => {
   if (isSessionHeader(req.header("X-Session-Token"))) {
     return req.header("X-Session-Token")!.trim();
   }
-  if (typeof req.query.sessionToken === "string") {
-    return req.query.sessionToken;
-  }
   return null;
 };
 
@@ -27,12 +24,12 @@ export const requireAuth: RequestHandler = async (req, res, next) => {
       return res.status(401).json({ status: "error", message: "Authentication required" });
     }
 
-    const user = await supabaseService.getUserBySessionToken(token);
+    const user = await dataService.getUserBySessionToken(token);
     if (!user) {
       return res.status(401).json({ status: "error", message: "Invalid or expired session" });
     }
 
-    req.authUser = supabaseService.sanitizeUser(user);
+    req.authUser = dataService.sanitizeUser(user);
     req.sessionToken = token;
     next();
   } catch (error) {

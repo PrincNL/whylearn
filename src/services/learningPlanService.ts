@@ -84,7 +84,7 @@ export const generateLearningPlan = (rawGoal: string, preferredPaceHoursPerWeek 
   return {
     goal: goalTitle,
     summary: `A focused roadmap to master ${goalTitle} through fundamentals, deliberate practice, and reflective improvements.`,
-    motivation: `Stay consistent—${goalTitle} rewards small, steady wins. Celebrate each completed milestone and share progress with your accountability circle.`,
+    motivation: `Stay consistent\u2014${goalTitle} rewards small, steady wins. Celebrate each completed milestone and share progress with your accountability circle.`,
     milestones,
     totalDurationHours,
     recommendedPaceHoursPerWeek,

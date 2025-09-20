@@ -1,0 +1,46 @@
+{
+  "version": 1,
+  "datasets": {
+    "users": {
+      "name": "users",
+      "schemaVersion": 1,
+      "lastMigratedAt": "2025-09-19T19:07:47.973Z"
+    },
+    "learningPlans": {
+      "name": "learningPlans",
+      "schemaVersion": 1,
+      "lastMigratedAt": "2025-09-19T19:07:47.973Z"
+    },
+    "progress": {
+      "name": "progress",
+      "schemaVersion": 1,
+      "lastMigratedAt": "2025-09-19T19:07:47.973Z"
+    },
+    "gamification": {
+      "name": "gamification",
+      "schemaVersion": 1,
+      "lastMigratedAt": "2025-09-19T19:07:47.973Z"
+    },
+    "coaching": {
+      "name": "coaching",
+      "schemaVersion": 1,
+      "lastMigratedAt": "2025-09-19T19:07:47.973Z"
+    },
+    "subscriptions": {
+      "name": "subscriptions",
+      "schemaVersion": 1,
+      "lastMigratedAt": "2025-09-19T19:07:47.973Z"
+    },
+    "subscriptionTiers": {
+      "name": "subscriptionTiers",
+      "schemaVersion": 1,
+      "lastMigratedAt": "2025-09-19T19:07:47.973Z"
+    },
+    "subscriptionEntitlements": {
+      "name": "subscriptionEntitlements",
+      "schemaVersion": 1,
+      "lastMigratedAt": "2025-09-19T19:07:47.973Z"
+    }
+  },
+  "lastBackupAt": "2025-09-19T19:07:48.508Z"
+}

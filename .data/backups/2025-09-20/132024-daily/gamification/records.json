@@ -1,0 +1,21 @@
+{
+  "schemaVersion": 1,
+  "records": [
+    {
+      "id": "5919941e-054f-4025-8b2d-17908e92dd4c",
+      "userId": "19be2745-d977-44f5-9acb-61eb11945909",
+      "planId": "68fa3ce0-6157-477f-a409-ca99c5c04222",
+      "progressPoints": 0,
+      "bonusPoints": 0,
+      "totalPoints": 0,
+      "level": 1,
+      "completionRate": 0,
+      "completedMilestones": 0,
+      "totalMilestones": 4,
+      "badges": [],
+      "createdAt": "2025-09-19T21:22:04.803Z",
+      "updatedAt": "2025-09-19T21:22:04.803Z"
+    }
+  ],
+  "lastUpdatedAt": "2025-09-19T21:22:04.656Z"
+}

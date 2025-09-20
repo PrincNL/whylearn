@@ -2,7 +2,7 @@ import { Router } from "express";
 import { z } from "zod";
 
 import { requireAuth } from "../middleware/authMiddleware";
-import { supabaseService } from "../services/supabaseService";
+import { dataService } from "../services/dataService";
 import { AppError } from "../utils/appError";
 import { asyncHandler } from "../utils/asyncHandler";
 
@@ -29,7 +29,7 @@ gamificationRouter.post(
       throw new AppError("Forbidden", 403);
     }
 
-    const result = await supabaseService.applyManualGamification(parsed.data);
+    const result = await dataService.applyManualGamification(parsed.data);
     res.status(200).json({ status: "success", data: result });
   }),
 );
@@ -50,7 +50,7 @@ gamificationRouter.get(
       throw new AppError("Forbidden", 403);
     }
 
-    const status = await supabaseService.getGamificationStatus(
+    const status = await dataService.getGamificationStatus(
       parsedParams.data.userId,
       parsedParams.data.planId,
     );

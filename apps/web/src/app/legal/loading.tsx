@@ -1,4 +1,4 @@
-﻿export default function LoadingLegal() {
+export default function LoadingLegal() {
   return (
     <div className="container flex flex-col gap-6 py-20">
       <div className="h-8 w-64 animate-pulse rounded bg-muted" />

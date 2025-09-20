@@ -1,8 +1,9 @@
 import request from "supertest";
-import { afterEach, beforeEach, describe, expect, it } from "vitest";
+import { afterEach, beforeEach, expect, it } from "vitest";
 
 import { createApp } from "../src/server";
 import { setupTestStorage } from "./helpers/storage";
+import { describeIfNetwork } from "./helpers/network";
 
 const registerPayload = {
   email: "gamification@example.com",
@@ -10,7 +11,7 @@ const registerPayload = {
   goal: "master gamification",
 };
 
-describe("Gamification routes", () => {
+describeIfNetwork("Gamification routes", () => {
   let cleanup: (() => void) | undefined;
   let app = createApp();
   let authToken = "";

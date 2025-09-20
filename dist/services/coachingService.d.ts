@@ -1,4 +1,4 @@
-import type { CoachingFeedback, GamificationStatus, ProgressOverview } from './supabaseService';
+import type { CoachingFeedback, GamificationStatus, ProgressOverview } from './dataService';
 export interface CoachingAdvice {
     summary: string;
     recommendedMilestones: string[];
@@ -31,8 +31,8 @@ export interface CoachingStatusResponse {
     latestAdvice?: CoachingFeedback;
 }
 export declare class CoachingService {
-    private readonly supabase;
-    constructor(supabase?: import("./supabaseService").SupabaseService);
+    private readonly store;
+    constructor(store?: import("./dataService").DataService);
     generateSession(input: GenerateCoachingInput): Promise<CoachingSessionResponse>;
     getCoachingStatus(userId: string, planId?: string, limit?: number): Promise<CoachingStatusResponse>;
     private buildAdvice;

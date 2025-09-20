@@ -2,14 +2,14 @@ import Stripe from 'stripe';
 import { env } from '../config/env';
 import { AppError } from '../utils/appError';
 import {
-  supabaseService,
+  dataService,
   type SubscriptionTier,
   type SubscriptionStatusValue,
   type UserSubscriptionStatus,
-} from './supabaseService';
+} from './dataService';
 
 type SubscriptionDependencies = {
-  supabase?: typeof supabaseService;
+  store?: typeof dataService;
   stripe?: Stripe | null;
 };
 
@@ -28,22 +28,22 @@ export interface SubscriptionChangeResponse {
 }
 
 export class SubscriptionService {
-  private readonly supabase: typeof supabaseService;
+  private readonly store: typeof dataService;
   private readonly stripe: Stripe | null;
 
   constructor(deps: SubscriptionDependencies = {}) {
-    this.supabase = deps.supabase ?? supabaseService;
+    this.store = deps.store ?? dataService;
     const stripeKey = deps.stripe ?? (env.STRIPE_SECRET_KEY ? new Stripe(env.STRIPE_SECRET_KEY) : null);
     this.stripe = stripeKey as Stripe | null;
   }
 
   async changeSubscription(request: SubscriptionChangeRequest): Promise<SubscriptionChangeResponse> {
-    const tier = await this.supabase.getSubscriptionTier(request.tierId);
+    const tier = await this.store.getSubscriptionTier(request.tierId);
     if (!tier) {
       throw new AppError('Subscription tier not found', 404, { tierId: request.tierId });
     }
 
-    const existingStatus = await this.supabase.getUserSubscriptionStatus(request.userId);
+    const existingStatus = await this.store.getUserSubscriptionStatus(request.userId);
 
     if (this.stripe && tier.stripePriceId) {
       const session = await this.createCheckoutSession(tier, request, existingStatus);
@@ -51,7 +51,7 @@ export class SubscriptionService {
         ? session.customer
         : session.customer?.id ?? existingStatus.stripeCustomerId ?? null;
 
-      const subscription = await this.supabase.upsertUserSubscription({
+      const subscription = await this.store.upsertUserSubscription({
         userId: request.userId,
         tierId: tier.id,
         status: 'incomplete',
@@ -68,7 +68,7 @@ export class SubscriptionService {
       };
     }
 
-    const subscription = await this.supabase.upsertUserSubscription({
+    const subscription = await this.store.upsertUserSubscription({
       userId: request.userId,
       tierId: tier.id,
       status: 'active',
@@ -82,11 +82,11 @@ export class SubscriptionService {
   }
 
   async getSubscriptionStatus(userId: string): Promise<UserSubscriptionStatus> {
-    return this.supabase.getUserSubscriptionStatus(userId);
+    return this.store.getUserSubscriptionStatus(userId);
   }
 
   async assertEntitlement(userId: string, entitlementCode: string): Promise<void> {
-    const status = await this.supabase.getUserSubscriptionStatus(userId);
+    const status = await this.store.getUserSubscriptionStatus(userId);
     if (!status.entitlements.includes(entitlementCode) || !this.isStatusActive(status.status)) {
       throw new AppError('Subscription required', 402, { entitlement: entitlementCode, status });
     }

@@ -1,4 +1,4 @@
-import type { AuthenticatedUser, UserSubscriptionStatus } from "../services/supabaseService";
+import type { AuthenticatedUser, UserSubscriptionStatus } from "../services/dataService";
 
 declare global {
   namespace Express {
